@@ -16,14 +16,28 @@ public class Migrations {
         this.connection = connection;
     }
 
-    public void performMigrations() throws Exception {
+    public void reset() throws Exception {
+        connection.createStatement().executeUpdate("BEGIN");
+        String queryDropTableSeats = "DROP TABLE seats;";
+        connection.createStatement().executeUpdate(queryDropTableSeats);
+
+        String queryDropTableTrips = "DROP TABLE trips;";
+        connection.createStatement().executeUpdate(queryDropTableTrips);
+
+        String queryDropTableUsers = "DROP TABLE users;";
+        connection.createStatement().executeUpdate(queryDropTableUsers);
+
+        performMigrations();
+    }
+
+    private void performMigrations() throws Exception {
         createTables();
         insertSeats();
         insertTrips();
         insertUsers();
     }
 
-    public void createTables() throws Exception {
+    private void createTables() throws Exception {
         connection.createStatement().executeUpdate("BEGIN");
         String queryCreateSeatsTable = FileLoader.loadFromFile("src/main/resources/db.migrations/create_table_seats.sql");
         connection.createStatement().executeUpdate(queryCreateSeatsTable);
@@ -36,28 +50,28 @@ public class Migrations {
         connection.commit();
     }
 
-    public void insertSeats() throws Exception {
+    private void insertSeats() throws Exception {
         connection.createStatement().executeUpdate("BEGIN");
         int count = 1;
-        for (int row = 1; row <= 40; row++) {
+        for (int row = 1; row <= 20; row++) {
             for (String seat : seatsPerRow) {
                 String seatNumber = String.format("%d-%s", row, seat);
                 String query = String.format("REPLACE INTO seats (id, name, trip_id) VALUES (%d, '%s', %d);", count, seatNumber, 1);
                 connection.createStatement().executeUpdate(query);
+                count++;
             }
-            count++;
         }
         connection.commit();
     }
 
-    public void insertTrips() throws Exception {
+    private void insertTrips() throws Exception {
         connection.createStatement().executeUpdate("BEGIN");
         String query = String.format("REPLACE INTO trips (id, name) VALUES (%d, '%s');", 1, "INDIGO-101");
         connection.createStatement().executeUpdate(query);
         connection.commit();
     }
 
-    public void insertUsers() throws Exception {
+    private void insertUsers() throws Exception {
         connection.createStatement().executeUpdate("BEGIN");
         for (int userId = 1; userId <= 120; userId++) {
             String name = faker.name().fullName();
