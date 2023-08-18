@@ -18,13 +18,13 @@ public class Migrations {
 
     public void reset() throws Exception {
         connection.createStatement().executeUpdate("BEGIN");
-        String queryDropTableSeats = "DROP TABLE seats;";
+        String queryDropTableSeats = "DROP TABLE IF EXISTS seats;";
         connection.createStatement().executeUpdate(queryDropTableSeats);
 
-        String queryDropTableTrips = "DROP TABLE trips;";
+        String queryDropTableTrips = "DROP TABLE IF EXISTS trips;";
         connection.createStatement().executeUpdate(queryDropTableTrips);
 
-        String queryDropTableUsers = "DROP TABLE users;";
+        String queryDropTableUsers = "DROP TABLE IF EXISTS users;";
         connection.createStatement().executeUpdate(queryDropTableUsers);
 
         performMigrations();
