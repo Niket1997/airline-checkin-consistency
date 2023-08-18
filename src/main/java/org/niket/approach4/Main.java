@@ -8,6 +8,7 @@ import org.niket.entities.Seat;
 import org.niket.entities.User;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -16,13 +17,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Main {
-    private static Connection connection = null;
     private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
 
     public static void main(String[] args) {
         try {
-            connection = DatabaseConnection.getConnection();
-            AirlineCheckinSystem airlineCheckinSystem = new AirlineCheckinSystem(connection);
+            AirlineCheckinSystem airlineCheckinSystem = new AirlineCheckinSystem();
             airlineCheckinSystem.reset();
 
             List<User> users = airlineCheckinSystem.getUsers();
@@ -55,11 +54,12 @@ public class Main {
         }
     }
 
-    private static void book(User user) throws SQLException {
-        connection.createStatement().executeUpdate("BEGIN");
-
-        String getSeatQuery = "SELECT * FROM seats WHERE user_id IS NULL AND trip_id = 1 ORDER BY id LIMIT 1 FOR UPDATE;";
-        ResultSet resultSet = connection.createStatement().executeQuery(getSeatQuery);
+    private static void book(User user) throws Exception {
+        Connection conn = DatabaseConnection.getDatabaseConnection();
+        conn.setAutoCommit(false);
+        String getSeatQuery = "SELECT * FROM seats WHERE user_id IS NULL AND trip_id = 1 ORDER BY id LIMIT 1 FOR UPDATE";
+        PreparedStatement getSeatStatement = conn.prepareStatement(getSeatQuery);
+        ResultSet resultSet = getSeatStatement.executeQuery();
         if (!resultSet.next()) throw new RuntimeException("seat not found");
         logger.info("transaction got the seat.");
         Seat seat = new Seat(
@@ -69,9 +69,9 @@ public class Main {
                 resultSet.getInt("user_id")
         );
 
-        String updateSeatQuery = String.format("UPDATE seats SET user_id = \"%s\" WHERE id = \"%s\";", user.id(), seat.id());
-        connection.createStatement().executeUpdate(updateSeatQuery);
-        connection.commit();
+        String updateSeatQuery = String.format("UPDATE seats SET user_id = \"%s\" WHERE id = \"%s\"", user.id(), seat.id());
+        conn.prepareStatement(updateSeatQuery).executeUpdate();
+        conn.commit();
         logger.info(String.format("%s booked the seat %s.", user.name(), resultSet.getString("name").trim()));
     }
 }

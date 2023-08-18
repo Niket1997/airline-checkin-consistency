@@ -9,17 +9,14 @@ import org.niket.entities.User;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Main {
     private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
-    private static Connection connection = null;
 
     public static void main(String[] args) {
         try {
-            connection = DatabaseConnection.getConnection();
-            AirlineCheckinSystem airlineCheckinSystem = new AirlineCheckinSystem(connection);
+            AirlineCheckinSystem airlineCheckinSystem = new AirlineCheckinSystem();
             airlineCheckinSystem.reset();
 
             Scanner myInput = new Scanner(System.in);
@@ -43,7 +40,8 @@ public class Main {
         }
     }
 
-    private static void book(Seat seat, User user) throws SQLException {
+    private static void book(Seat seat, User user) throws Exception {
+        Connection connection = DatabaseConnection.getDatabaseConnection();
         connection.createStatement().executeUpdate("BEGIN");
 
         String getSeatQuery = String.format("SELECT * FROM seats WHERE id = \"%s\";", seat.id());

@@ -8,7 +8,7 @@ import org.niket.entities.User;
 public class Main {
     public static void main(String[] args) {
         try {
-            AirlineCheckinSystem airlineCheckinSystem = new AirlineCheckinSystem(DatabaseConnection.getConnection());
+            AirlineCheckinSystem airlineCheckinSystem = new AirlineCheckinSystem();
             airlineCheckinSystem.reset();
             User user = airlineCheckinSystem.getUser(1);
             Seat seat = airlineCheckinSystem.getSeat(2);

@@ -8,18 +8,15 @@ import org.niket.entities.User;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Random;
 import java.util.Scanner;
 
 public class Main {
     private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
-    private static Connection connection = null;
 
     public static void main(String[] args) {
         try {
-            connection = DatabaseConnection.getConnection();
-            AirlineCheckinSystem airlineCheckinSystem = new AirlineCheckinSystem(connection);
+            AirlineCheckinSystem airlineCheckinSystem = new AirlineCheckinSystem();
             airlineCheckinSystem.reset();
 
             Scanner myInput = new Scanner(System.in);
@@ -37,8 +34,8 @@ public class Main {
         }
     }
 
-    private static void book(User user) throws SQLException {
-        connection.createStatement().executeUpdate("BEGIN");
+    private static void book(User user) throws Exception {
+        Connection connection = DatabaseConnection.getDatabaseConnection();
 
         Random random = new Random();
         int randomSeatNumber = 1 + random.nextInt(120);

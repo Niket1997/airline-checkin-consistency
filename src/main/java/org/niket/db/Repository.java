@@ -10,14 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Repository {
-    private final Connection connection;
 
-    public Repository(Connection connection) {
-        this.connection = connection;
+    public Repository() {
+
     }
 
-    public User getUser(int userId) throws SQLException {
-        connection.createStatement().executeUpdate("BEGIN");
+    public User getUser(int userId) throws Exception {
+        Connection connection = DatabaseConnection.getDatabaseConnection();
         String query = String.format("SELECT * FROM users where id = %d;", userId);
         ResultSet resultSet = connection.createStatement().executeQuery(query);
         connection.commit();
@@ -31,8 +30,8 @@ public class Repository {
         return user;
     }
 
-    public Seat getSeat(int seatId) throws SQLException {
-        connection.createStatement().executeUpdate("BEGIN");
+    public Seat getSeat(int seatId) throws Exception {
+        Connection connection = DatabaseConnection.getDatabaseConnection();
         String query = String.format("SELECT * FROM seats where id = %d;", seatId);
         ResultSet resultSet = connection.createStatement().executeQuery(query);
         connection.commit();
@@ -48,15 +47,15 @@ public class Repository {
         return seat;
     }
 
-    public void bookSeat(int userId, int seatId) throws SQLException {
-        connection.createStatement().executeUpdate("BEGIN");
+    public void bookSeat(int userId, int seatId) throws Exception {
+        Connection connection = DatabaseConnection.getDatabaseConnection();
         String query = String.format("UPDATE seats SET user_id = %d WHERE id = %d;", userId, seatId);
         connection.createStatement().executeUpdate(query);
         connection.commit();
     }
 
-    public void printSeats() throws SQLException {
-        connection.createStatement().executeUpdate("BEGIN");
+    public void printSeats() throws Exception {
+        Connection connection = DatabaseConnection.getDatabaseConnection();
         String query = "SELECT * FROM seats;";
         ResultSet resultSet = connection.createStatement().executeQuery(query);
         connection.commit();
@@ -85,8 +84,8 @@ public class Repository {
         System.out.println();
     }
 
-    public List<User> getUsers() throws SQLException {
-        connection.createStatement().executeUpdate("BEGIN");
+    public List<User> getUsers() throws Exception {
+        Connection connection = DatabaseConnection.getDatabaseConnection();
         String query = "SELECT * FROM users;";
         ResultSet resultSet = connection.createStatement().executeQuery(query);
         connection.commit();

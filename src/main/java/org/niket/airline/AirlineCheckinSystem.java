@@ -5,7 +5,6 @@ import org.niket.db.Repository;
 import org.niket.entities.Seat;
 import org.niket.entities.User;
 
-import java.sql.Connection;
 import java.util.List;
 
 public class AirlineCheckinSystem {
@@ -13,9 +12,9 @@ public class AirlineCheckinSystem {
 
     private final Repository repository;
 
-    public AirlineCheckinSystem(Connection connection) {
-        migrations = new Migrations(connection);
-        repository = new Repository(connection);
+    public AirlineCheckinSystem() {
+        migrations = new Migrations();
+        repository = new Repository();
     }
 
     public void reset() throws Exception {

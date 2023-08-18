@@ -7,25 +7,26 @@ import java.sql.Connection;
 import java.util.List;
 
 public class Migrations {
-    private final Connection connection;
     private final Faker faker = new Faker();
 
     private final List<String> seatsPerRow = List.of("A", "B", "C", "D", "E", "F");
 
-    public Migrations(Connection connection) {
-        this.connection = connection;
+    public Migrations() {
     }
 
     public void reset() throws Exception {
-        connection.createStatement().executeUpdate("BEGIN");
+        Connection connection = DatabaseConnection.getDatabaseConnection();
         String queryDropTableSeats = "DROP TABLE IF EXISTS seats;";
         connection.createStatement().executeUpdate(queryDropTableSeats);
+        connection.commit();
 
         String queryDropTableTrips = "DROP TABLE IF EXISTS trips;";
         connection.createStatement().executeUpdate(queryDropTableTrips);
+        connection.commit();
 
         String queryDropTableUsers = "DROP TABLE IF EXISTS users;";
         connection.createStatement().executeUpdate(queryDropTableUsers);
+        connection.commit();
 
         performMigrations();
     }
@@ -38,7 +39,7 @@ public class Migrations {
     }
 
     private void createTables() throws Exception {
-        connection.createStatement().executeUpdate("BEGIN");
+        Connection connection = DatabaseConnection.getDatabaseConnection();
         String queryCreateSeatsTable = FileLoader.loadFromFile("src/main/resources/db.migrations/create_table_seats.sql");
         connection.createStatement().executeUpdate(queryCreateSeatsTable);
 
@@ -51,7 +52,7 @@ public class Migrations {
     }
 
     private void insertSeats() throws Exception {
-        connection.createStatement().executeUpdate("BEGIN");
+        Connection connection = DatabaseConnection.getDatabaseConnection();
         int count = 1;
         for (int row = 1; row <= 20; row++) {
             for (String seat : seatsPerRow) {
@@ -65,14 +66,14 @@ public class Migrations {
     }
 
     private void insertTrips() throws Exception {
-        connection.createStatement().executeUpdate("BEGIN");
+        Connection connection = DatabaseConnection.getDatabaseConnection();
         String query = String.format("REPLACE INTO trips (id, name) VALUES (%d, '%s');", 1, "INDIGO-101");
         connection.createStatement().executeUpdate(query);
         connection.commit();
     }
 
     private void insertUsers() throws Exception {
-        connection.createStatement().executeUpdate("BEGIN");
+        Connection connection = DatabaseConnection.getDatabaseConnection();
         for (int userId = 1; userId <= 120; userId++) {
             String name = faker.name().fullName();
             String query = String.format("REPLACE INTO users (id, name) VALUES (%d, \"%s\");", userId, name);

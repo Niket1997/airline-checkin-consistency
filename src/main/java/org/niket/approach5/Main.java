@@ -9,20 +9,17 @@ import org.niket.entities.User;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Main {
-    private static Connection connection = null;
     private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
 
     public static void main(String[] args) {
         try {
-            connection = DatabaseConnection.getConnection();
-            AirlineCheckinSystem airlineCheckinSystem = new AirlineCheckinSystem(connection);
+            AirlineCheckinSystem airlineCheckinSystem = new AirlineCheckinSystem();
             airlineCheckinSystem.reset();
 
             List<User> users = airlineCheckinSystem.getUsers();
@@ -55,9 +52,8 @@ public class Main {
         }
     }
 
-    private static void book(User user) throws SQLException {
-        connection.createStatement().executeUpdate("BEGIN");
-
+    private static void book(User user) throws Exception {
+        Connection connection = DatabaseConnection.getDatabaseConnection();
         String getSeatQuery = "SELECT * FROM seats WHERE user_id IS NULL AND trip_id = 1 ORDER BY id LIMIT 1 FOR UPDATE SKIP LOCKED;";
         ResultSet resultSet = connection.createStatement().executeQuery(getSeatQuery);
         if (!resultSet.next()) throw new RuntimeException("seat not found");
