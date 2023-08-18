@@ -1,5 +1,7 @@
 package org.niket.approach2;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.niket.airline.AirlineCheckinSystem;
 import org.niket.db.DatabaseConnection;
 import org.niket.entities.User;
@@ -15,6 +17,7 @@ import java.util.concurrent.Executors;
 
 public class Main {
     private static Connection connection = null;
+    private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
 
     public static void main(String[] args) {
         try {
@@ -23,7 +26,7 @@ public class Main {
             airlineCheckinSystem.reset();
 
             List<User> users = airlineCheckinSystem.getUsers();
-            System.out.printf("simulating seat selection for %d users.%n%n", users.size());
+            logger.info(String.format("simulating seat selection for %d users.%n%n", users.size()));
 
             ExecutorService threadPool = Executors.newFixedThreadPool(users.size());
             CountDownLatch latch = new CountDownLatch(users.size());
@@ -39,12 +42,12 @@ public class Main {
                     }
                 });
             }
-            System.out.println("waiting on threads to complete.");
+            logger.info("waiting on threads to complete.");
             latch.await();
             threadPool.shutdown();
             airlineCheckinSystem.printSeats();
         } catch (Exception e) {
-            System.out.println("Exception thrown: " + e.getMessage());
+            logger.info("Exception thrown: " + e.getMessage());
         }
     }
 
@@ -57,11 +60,11 @@ public class Main {
         String getSeatQuery = String.format("SELECT * FROM seats WHERE id = \"%s\";", randomSeatNumber);
         ResultSet resultSet = connection.createStatement().executeQuery(getSeatQuery);
         if (!resultSet.next()) throw new RuntimeException("seat not found");
-        System.out.println("transaction got the seat.");
+        logger.info("transaction got the seat.");
 
         String updateSeatQuery = String.format("UPDATE seats SET user_id = \"%s\" WHERE id = \"%s\";", user.id(), randomSeatNumber);
         connection.createStatement().executeUpdate(updateSeatQuery);
         connection.commit();
-        System.out.printf("%s booked the seat %s.%n", user.name(), resultSet.getString("name").trim());
+        logger.info(String.format("%s booked the seat %s.", user.name(), resultSet.getString("name").trim()));
     }
 }

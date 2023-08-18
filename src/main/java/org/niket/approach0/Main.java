@@ -1,5 +1,7 @@
 package org.niket.approach0;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.niket.airline.AirlineCheckinSystem;
 import org.niket.db.DatabaseConnection;
 import org.niket.entities.Seat;
@@ -9,11 +11,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Main {
-    private static final Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+    private static final Logger logger = LogManager.getLogger(LogManager.ROOT_LOGGER_NAME);
     private static Connection connection = null;
 
     public static void main(String[] args) {
@@ -35,7 +35,7 @@ public class Main {
             System.out.println();
 
             book(seat, user);
-            logger.log(Level.INFO, String.format("%s booked the seat %s", user.name(), seat.name()));
+            logger.info(String.format("%s booked the seat %s", user.name(), seat.name()));
             airlineCheckinSystem.printSeats();
 
         } catch (Exception e) {
@@ -48,7 +48,7 @@ public class Main {
 
         String getSeatQuery = String.format("SELECT * FROM seats WHERE id = \"%s\";", seat.id());
         ResultSet resultSet = connection.createStatement().executeQuery(getSeatQuery);
-        logger.log(Level.INFO, "transaction got the seat");
+        logger.info("transaction got the seat");
 
         String updateSeatQuery = String.format("UPDATE seats SET user_id = \"%s\" WHERE id = \"%s\";", user.id(), seat.id());
         connection.createStatement().executeUpdate(updateSeatQuery);
