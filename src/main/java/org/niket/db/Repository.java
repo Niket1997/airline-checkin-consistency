@@ -26,6 +26,7 @@ public class Repository {
                     resultSet.getString("name").trim()
             );
         }
+        connection.close();
         return user;
     }
 
@@ -43,6 +44,7 @@ public class Repository {
                     resultSet.getInt("user_id")
             );
         }
+        connection.close();
         return seat;
     }
 
@@ -51,6 +53,7 @@ public class Repository {
         String query = String.format("UPDATE seats SET user_id = %d WHERE id = %d;", userId, seatId);
         connection.createStatement().executeUpdate(query);
         connection.commit();
+        connection.close();
     }
 
     public void printSeats() throws Exception {
@@ -75,6 +78,7 @@ public class Repository {
                 row = 0;
             }
         }
+        connection.close();
         System.out.println();
         for (row = 0; row < 6; row++) {
             System.out.println(String.join(" ", seats[row]));
@@ -96,6 +100,7 @@ public class Repository {
                     resultSet.getString("name").trim()
             ));
         }
+        connection.close();
         return users;
     }
 }

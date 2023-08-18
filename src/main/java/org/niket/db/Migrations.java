@@ -27,6 +27,7 @@ public class Migrations {
         String queryDropTableUsers = "DROP TABLE IF EXISTS users;";
         connection.createStatement().executeUpdate(queryDropTableUsers);
         connection.commit();
+        connection.close();
 
         performMigrations();
     }
@@ -49,6 +50,7 @@ public class Migrations {
         String queryCreateUsersTable = FileLoader.loadFromFile("src/main/resources/db.migrations/create_table_users.sql");
         connection.createStatement().executeUpdate(queryCreateUsersTable);
         connection.commit();
+        connection.close();
     }
 
     private void insertSeats() throws Exception {
@@ -63,6 +65,7 @@ public class Migrations {
             }
         }
         connection.commit();
+        connection.close();
     }
 
     private void insertTrips() throws Exception {
@@ -70,6 +73,7 @@ public class Migrations {
         String query = String.format("REPLACE INTO trips (id, name) VALUES (%d, '%s');", 1, "INDIGO-101");
         connection.createStatement().executeUpdate(query);
         connection.commit();
+        connection.close();
     }
 
     private void insertUsers() throws Exception {
@@ -80,5 +84,6 @@ public class Migrations {
             connection.createStatement().executeUpdate(query);
         }
         connection.commit();
+        connection.close();
     }
 }

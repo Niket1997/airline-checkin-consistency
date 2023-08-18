@@ -3,7 +3,7 @@ package org.niket.approach4;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.niket.airline.AirlineCheckinSystem;
-import org.niket.db.DatabaseConnection;
+import org.niket.db.HikariConnectionPool;
 import org.niket.entities.Seat;
 import org.niket.entities.User;
 
@@ -54,10 +54,10 @@ public class Main {
     }
 
     private static void book(User user) throws Exception {
-        Connection conn = DatabaseConnection.getDatabaseConnection();
-        conn.setAutoCommit(false);
+        Connection connection = HikariConnectionPool.getConnection();
+        connection.setAutoCommit(false);
         String getSeatQuery = "SELECT * FROM seats WHERE user_id IS NULL AND trip_id = 1 ORDER BY id LIMIT 1 FOR UPDATE";
-        PreparedStatement getSeatStatement = conn.prepareStatement(getSeatQuery);
+        PreparedStatement getSeatStatement = connection.prepareStatement(getSeatQuery);
         ResultSet resultSet = getSeatStatement.executeQuery();
         if (!resultSet.next()) throw new RuntimeException("seat not found");
         logger.info("transaction got the seat.");
@@ -69,8 +69,9 @@ public class Main {
         );
 
         String updateSeatQuery = String.format("UPDATE seats SET user_id = \"%s\" WHERE id = \"%s\"", user.id(), seat.id());
-        conn.prepareStatement(updateSeatQuery).executeUpdate();
-        conn.commit();
+        connection.prepareStatement(updateSeatQuery).executeUpdate();
+        connection.commit();
         logger.info(String.format("%s booked the seat %s.", user.name(), resultSet.getString("name").trim()));
+        connection.close();
     }
 }

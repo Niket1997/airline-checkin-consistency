@@ -49,5 +49,6 @@ public class Main {
         connection.createStatement().executeUpdate(updateSeatQuery);
         connection.commit();
         logger.info(String.format("%s booked the seat %s.", user.name(), resultSet.getString("name").trim()));
+        connection.close();
     }
 }

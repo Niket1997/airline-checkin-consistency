@@ -51,5 +51,6 @@ public class Main {
         String updateSeatQuery = String.format("UPDATE seats SET user_id = \"%s\" WHERE id = \"%s\";", user.id(), seat.id());
         connection.createStatement().executeUpdate(updateSeatQuery);
         connection.commit();
+        connection.close();
     }
 }
