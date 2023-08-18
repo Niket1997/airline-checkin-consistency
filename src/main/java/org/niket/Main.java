@@ -1,7 +1,6 @@
 package org.niket;
 
 import org.niket.airline.AirlineCheckinSystem;
-import org.niket.db.DatabaseConnection;
 import org.niket.entities.Seat;
 import org.niket.entities.User;
 
