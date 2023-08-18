@@ -6,6 +6,8 @@ import org.niket.entities.User;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Repository {
     private final Connection connection;
@@ -81,5 +83,21 @@ public class Repository {
             if (row == 2) System.out.println();
         }
         System.out.println();
+    }
+
+    public List<User> getUsers() throws SQLException {
+        connection.createStatement().executeUpdate("BEGIN");
+        String query = "SELECT * FROM users;";
+        ResultSet resultSet = connection.createStatement().executeQuery(query);
+        connection.commit();
+
+        List<User> users = new ArrayList<>();
+        while (resultSet.next()) {
+            users.add(new User(
+                    resultSet.getInt("id"),
+                    resultSet.getString("name").trim()
+            ));
+        }
+        return users;
     }
 }

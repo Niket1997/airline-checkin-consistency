@@ -6,6 +6,7 @@ import org.niket.entities.Seat;
 import org.niket.entities.User;
 
 import java.sql.Connection;
+import java.util.List;
 
 public class AirlineCheckinSystem {
     private final Migrations migrations;
@@ -35,5 +36,9 @@ public class AirlineCheckinSystem {
 
     public void printSeats() throws Exception {
         repository.printSeats();
+    }
+
+    public List<User> getUsers() throws Exception {
+        return repository.getUsers();
     }
 }
